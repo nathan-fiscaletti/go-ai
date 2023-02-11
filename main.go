@@ -16,7 +16,7 @@ import (
 func main() {
 	randomGenerator := rand.New(rand.NewSource(time.Now().UnixNano()))
 
-	trainingData, err := intelligence.NewNumberIdentificationFile(path.Join(".", "training-data", "train.csv"))
+	trainingData, err := intelligence.NewNumberIdentificationFile(path.Join(".", "training-data", "mnist_train.csv"))
 	if err != nil {
 		panic(err)
 	}
@@ -31,9 +31,9 @@ func main() {
 	nn := intelligence.NewNumberIdentificationNeuralNetwork(
 		&intelligence.NumberIdentificationNeuralNetworkConfig{
 			RandomGenerator: randomGenerator,
-			LayerCount:      2,   // Number of hidden layers
+			LayerCount:      1,   // Number of hidden layers
 			LayerSize:       100, // Number of neurons in each layer
-			LearningRate:    0.035,
+			LearningRate:    0.0035,
 		},
 	)
 

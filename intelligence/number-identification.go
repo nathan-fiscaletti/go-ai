@@ -104,12 +104,9 @@ func NewNumberIdentificationNeuralNetwork(config *NumberIdentificationNeuralNetw
 			LayerSize:    config.LayerSize,
 			LearningRate: config.LearningRate,
 
-			CostFunction:       cost.MeanSquaredError{},
-			ActivationFunction: activation.Tanh{},
-			RegularizationFunction: regularization.L2{
-				RegularizationRate: 0.01,
-				Lambda:             0.01,
-			},
+			CostFunction:           cost.MeanSquaredError{},
+			ActivationFunction:     activation.Tanh{},
+			RegularizationFunction: regularization.None{},
 		},
 	)
 
