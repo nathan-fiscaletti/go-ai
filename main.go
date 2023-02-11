@@ -1,9 +1,6 @@
 package main
 
 import (
-	// "github.com/nathan-fiscaletti/ai/algos/cost"
-	// "github.com/nathan-fiscaletti/ai/intelligence"
-
 	"fmt"
 	"math/rand"
 	"path"
