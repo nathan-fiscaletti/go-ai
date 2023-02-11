@@ -31,9 +31,9 @@ func main() {
 	nn := intelligence.NewNumberIdentificationNeuralNetwork(
 		&intelligence.NumberIdentificationNeuralNetworkConfig{
 			RandomGenerator: randomGenerator,
-			LayerCount:      1,   // Number of hidden layers
-			LayerSize:       100, // Number of neurons in each layer
-			LearningRate:    0.0035,
+			LayerCount:      2,  // Number of hidden layers
+			LayerSize:       25, // Number of neurons in each layer
+			LearningRate:    0.035,
 		},
 	)
 

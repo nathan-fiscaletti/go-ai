@@ -29,7 +29,7 @@ func newNumberIdentificationElement(outputLen int, expected int, imageData []flo
 	expectedOutput := []float64{}
 
 	for i := 0; i < outputLen; i++ {
-		if i+1 == expected {
+		if i == expected {
 			expectedOutput = append(expectedOutput, 1)
 		} else {
 			expectedOutput = append(expectedOutput, 0)
@@ -110,7 +110,7 @@ func NewNumberIdentificationNeuralNetwork(config *NumberIdentificationNeuralNetw
 		},
 	)
 
-	network.output = components.NewLayer(network.randomGenerator, 10)
+	network.output = components.NewLayer(network.randomGenerator, activation.SoftMax{}, regularization.None{}, 10)
 
 	return &numberIdentificationNeuralNetwork{
 		network: network,
@@ -119,7 +119,7 @@ func NewNumberIdentificationNeuralNetwork(config *NumberIdentificationNeuralNetw
 
 func (n *numberIdentificationNeuralNetwork) Predict(data *numberIdentificationElement) int {
 	output := n.network.predict(data.imageData)
-	return output.GetPredictedIndex() + 1
+	return output.GetPredictedIndex()
 }
 
 func (n *numberIdentificationNeuralNetwork) Test(data *NumberIdentificationFile) int {

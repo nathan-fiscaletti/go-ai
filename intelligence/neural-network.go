@@ -46,7 +46,7 @@ func NewNeuralNetwork(config *NeuralNetworkConfig) *neuralNetwork {
 	// Initialize Layer
 	layers := []*components.Layer{}
 	for layersIdx := 0; layersIdx < config.LayerCount; layersIdx++ {
-		layer := components.NewLayer(config.RandomGenerator, config.LayerSize)
+		layer := components.NewLayer(config.RandomGenerator, network.activationFunction, network.regularizationFunction, config.LayerSize)
 		layers = append(layers, layer)
 	}
 	network.layers = &layers
@@ -60,12 +60,12 @@ func (n *neuralNetwork) predict(input []float64) *prediction {
 	// Calculate hidden layer activations
 	inputs := input
 	for _, layer := range *n.layers {
-		inputs = layer.Activations(n.activationFunction, inputs)
+		inputs = layer.Activations(inputs)
 		activationSet = append(activationSet, inputs)
 	}
 
 	// Calculate output layer activations
-	outputs := n.output.Activations(n.activationFunction, inputs)
+	outputs := n.output.Activations(inputs)
 
 	return &prediction{
 		predictedIndex:         algos.MaxIdx(outputs),
@@ -89,16 +89,19 @@ func (n *neuralNetwork) backPropagate(
 
 	// Calculate all errors for hidden layers
 	for layerIdx := len(*n.layers) - 1; layerIdx >= 0; layerIdx-- {
-		hiddenLayerErrors[layerIdx] = (*n.layers)[layerIdx].PropagateErrors(n.activationFunction, prediction.hiddenLayerActivations[layerIdx], lastLayer, lastErrors)
+		hiddenLayerErrors[layerIdx] = (*n.layers)[layerIdx].PropagateErrors(
+			prediction.hiddenLayerActivations[layerIdx],
+			lastLayer,
+			lastErrors,
+		)
 		lastErrors = hiddenLayerErrors[layerIdx]
 		lastLayer = (*n.layers)[layerIdx]
 	}
 
 	// Update output layer weights / bias
 	n.output.UpdateWeights(
-		n.regularizationFunction,
 		prediction.GetLastHiddenLayerActivations(),
-		outputLayerErrors, //hiddenLayerErrors[len(hiddenLayerErrors)-1],
+		outputLayerErrors,
 		n.learningRate,
 	)
 	n.output.UpdateBiases(
@@ -110,14 +113,12 @@ func (n *neuralNetwork) backPropagate(
 	for layerIdx := len(*n.layers) - 1; layerIdx >= 0; layerIdx-- {
 		if layerIdx > 0 {
 			(*n.layers)[layerIdx].UpdateWeights(
-				n.regularizationFunction,
 				prediction.hiddenLayerActivations[layerIdx-1],
 				hiddenLayerErrors[layerIdx],
 				n.learningRate,
 			)
 		} else {
 			(*n.layers)[layerIdx].UpdateWeights(
-				n.regularizationFunction,
 				input,
 				hiddenLayerErrors[layerIdx],
 				n.learningRate,
